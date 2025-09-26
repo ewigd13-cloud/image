@@ -9,7 +9,7 @@ type Props = {
 const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [boardScale, setBoardScale] = useState(1); // 拡大倍率
+  const [boardScale, setBoardScale] = useState(1); // ホワイトボード枠の拡大倍率
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
@@ -32,8 +32,8 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
     ctx.drawImage(video, 0, 0);
 
     // ホワイトボード枠の描画
-    const boardWidth = canvas.width / 8 * boardScale;
-    const boardHeight = boardWidth * 2.5;
+    const boardWidth = 160 * boardScale;
+    const boardHeight = 400 * boardScale;
     const boardX = 20;
     const boardY = canvas.height - boardHeight - 20;
     const cellHeight = boardHeight / 5;
@@ -83,31 +83,39 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
           className="absolute inset-0 w-full h-full object-cover z-0"
         />
 
-        {/* ホワイトボード枠（左下） */}
+        {/* ホワイトボード枠（オーバーレイ） */}
         <div
-          className="absolute bottom-4 left-4 z-10 bg-white rounded shadow pointer-events-none"
+          className="absolute bottom-4 left-4 z-10 origin-bottom-left"
           style={{
-            width: `${160 * boardScale}px`,
-            height: `${400 * boardScale}px`,
-            fontSize: `${12 * boardScale}px`,
-            display: 'grid',
-            gridTemplateColumns: '80px 1fr',
-            gridTemplateRows: 'repeat(5, 1fr)',
-            overflow: 'hidden',
+            transform: `scale(${boardScale})`,
+            transformOrigin: 'bottom left',
           }}
         >
-          {[
-            ['設備', overlayText.vehicle],
-            ['対象', overlayText.subject],
-            ['種類', overlayText.type],
-            ['日付', overlayText.date],
-            ['備考', overlayText.record],
-          ].map(([label, value], i) => (
-            <React.Fragment key={i}>
-              <div className="border flex items-center justify-center bg-gray-100">{label}</div>
-              <div className="border flex items-center justify-center">{value}</div>
-            </React.Fragment>
-          ))}
+          <div
+            className="bg-white rounded shadow pointer-events-none"
+            style={{
+              width: '160px',
+              height: '400px',
+              fontSize: '12px',
+              display: 'grid',
+              gridTemplateColumns: '64px 1fr',
+              gridTemplateRows: 'repeat(5, 1fr)',
+              overflow: 'hidden',
+            }}
+          >
+            {[
+              ['設備', overlayText.vehicle],
+              ['対象', overlayText.subject],
+              ['種類', overlayText.type],
+              ['日付', overlayText.date],
+              ['備考', overlayText.record],
+            ].map(([label, value], i) => (
+              <React.Fragment key={i}>
+                <div className="border flex items-center justify-center bg-gray-100">{label}</div>
+                <div className="border flex items-center justify-center">{value}</div>
+              </React.Fragment>
+            ))}
+          </div>
         </div>
 
         <canvas ref={canvasRef} style={{ display: 'none' }} />
