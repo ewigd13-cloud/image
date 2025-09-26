@@ -9,7 +9,7 @@ type Props = {
 const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [boardScale, setBoardScale] = useState(1); // ホワイトボード枠の拡大倍率
+  const [boardScale, setBoardScale] = useState(1);
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
@@ -31,7 +31,6 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
 
     ctx.drawImage(video, 0, 0);
 
-    // ホワイトボード枠の描画
     const boardWidth = 160 * boardScale;
     const boardHeight = 400 * boardScale;
     const boardX = 20;
@@ -73,9 +72,9 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
   };
 
   return (
-    <div className="flex w-full justify-center items-start gap-4">
-      {/* カメラ映像とホワイトボード枠 */}
-      <div className="relative w-[60%] h-[240px] bg-black rounded overflow-hidden">
+    <div className="w-full flex flex-col items-center gap-4">
+      {/* カメラ映像 */}
+      <div className="relative w-[640px] h-[360px] bg-black rounded overflow-hidden">
         <video
           ref={videoRef}
           autoPlay
@@ -84,22 +83,21 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
         />
 
         {/* ホワイトボード枠（オーバーレイ） */}
-        <div
-          className="absolute bottom-4 left-4 z-10 origin-bottom-left"
-          style={{
-            transform: `scale(${boardScale})`,
-            transformOrigin: 'bottom left',
-          }}
-        >
+        <div className="absolute bottom-4 left-4 z-10">
           <div
-            className="bg-white rounded shadow pointer-events-none"
             style={{
+              transform: `scale(${boardScale})`,
+              transformOrigin: 'bottom left',
               width: '160px',
               height: '400px',
               fontSize: '12px',
+              backgroundColor: 'white',
               display: 'grid',
               gridTemplateColumns: '64px 1fr',
               gridTemplateRows: 'repeat(5, 1fr)',
+              borderRadius: '6px',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+              pointerEvents: 'none',
               overflow: 'hidden',
             }}
           >
@@ -121,24 +119,23 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
         <canvas ref={canvasRef} style={{ display: 'none' }} />
       </div>
 
-      {/* 撮影ボタンと拡大操作 */}
-      <div className="flex flex-col gap-2">
+      {/* 撮影＋拡大操作 */}
+      <div className="flex gap-2">
         <button
           onClick={handleCapture}
-          className="h-[240px] w-[80px] bg-red-600 text-white rounded shadow flex items-center justify-center"
+          className="px-4 py-2 bg-red-600 text-white rounded shadow"
         >
           撮影
         </button>
-
         <button
           onClick={() => setBoardScale(prev => Math.min(prev + 0.2, 3))}
-          className="px-2 py-1 bg-blue-500 text-white rounded"
+          className="px-4 py-2 bg-blue-500 text-white rounded"
         >
           ＋拡大
         </button>
         <button
           onClick={() => setBoardScale(prev => Math.max(prev - 0.2, 0.5))}
-          className="px-2 py-1 bg-gray-500 text-white rounded"
+          className="px-4 py-2 bg-gray-500 text-white rounded"
         >
           −縮小
         </button>
