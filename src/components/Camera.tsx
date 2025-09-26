@@ -52,24 +52,29 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
       }
     }
 
-    // テキスト描画
+    // ラベルと値のペア
+    const labels = ['設備', '対象', '種類', '日付', '備考'];
     const values = [
-      overlayText.date,
       overlayText.vehicle,
-      overlayText.type,
       overlayText.subject,
+      overlayText.type,
+      overlayText.date,
       overlayText.record,
-      '', '', '', '', ''
     ];
+
     ctx.font = 'bold 20px sans-serif';
     ctx.fillStyle = 'black';
-    values.forEach((text, i) => {
-      const col = i % 2;
-      const row = Math.floor(i / 2);
-      const x = boardX + col * cellWidth + 10;
-      const y = boardY + row * cellHeight + 30;
-      ctx.fillText(text, x, y);
-    });
+
+    for (let row = 0; row < 5; row++) {
+      // 左列：ラベル
+      const labelX = boardX + 10;
+      const labelY = boardY + row * cellHeight + 30;
+      ctx.fillText(labels[row], labelX, labelY);
+
+      // 右列：入力値
+      const valueX = boardX + cellWidth + 10;
+      ctx.fillText(values[row], valueX, labelY);
+    }
 
     const dataUrl = canvas.toDataURL('image/png');
     onCapture(dataUrl);
@@ -88,23 +93,22 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
         />
 
         {/* ホワイトボード枠（オーバーレイ） */}
-<div className="absolute bottom-4 left-4 z-10 bg-white p-2 rounded shadow grid grid-cols-2 grid-rows-5 gap-2 w-[420px] pointer-events-none">
-  {/* 左列：固定ラベル */}
-  <div className="border p-1 text-xs font-bold bg-gray-100">設備</div>
-  <div className="border p-1 text-xs font-bold">{overlayText.vehicle}</div>
+        <div className="absolute bottom-4 left-4 z-10 bg-white p-2 rounded shadow grid grid-cols-2 grid-rows-5 gap-2 w-[420px] pointer-events-none">
+          <div className="border p-1 text-xs font-bold bg-gray-100">設備</div>
+          <div className="border p-1 text-xs font-bold">{overlayText.vehicle}</div>
 
-  <div className="border p-1 text-xs font-bold bg-gray-100">対象</div>
-  <div className="border p-1 text-xs font-bold">{overlayText.subject}</div>
+          <div className="border p-1 text-xs font-bold bg-gray-100">対象</div>
+          <div className="border p-1 text-xs font-bold">{overlayText.subject}</div>
 
-  <div className="border p-1 text-xs font-bold bg-gray-100">種類</div>
-  <div className="border p-1 text-xs font-bold">{overlayText.type}</div>
+          <div className="border p-1 text-xs font-bold bg-gray-100">種類</div>
+          <div className="border p-1 text-xs font-bold">{overlayText.type}</div>
 
-  <div className="border p-1 text-xs font-bold bg-gray-100">日付</div>
-  <div className="border p-1 text-xs font-bold">{overlayText.date}</div>
+          <div className="border p-1 text-xs font-bold bg-gray-100">日付</div>
+          <div className="border p-1 text-xs font-bold">{overlayText.date}</div>
 
-  <div className="border p-1 text-xs font-bold bg-gray-100">備考</div>
-  <div className="border p-1 text-xs font-bold">{overlayText.record}</div>
-</div>
+          <div className="border p-1 text-xs font-bold bg-gray-100">備考</div>
+          <div className="border p-1 text-xs font-bold">{overlayText.record}</div>
+        </div>
 
         {/* canvas（非表示） */}
         <canvas ref={canvasRef} style={{ display: 'none' }} />
