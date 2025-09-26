@@ -18,17 +18,27 @@ const InputPanel: React.FC<Props> = ({ formState, setFormState }) => {
     setFormState({ ...formState, [key]: e.target.value });
   };
 
+  const placeholders: Record<keyof FormState, string> = {
+    vehicle: '設備名',
+    subject: '対象物',
+    type: '種類',
+    date: '日付（例: 2025-09-26）',
+    record: '備考・記録',
+  };
+
   return (
     <div className="flex flex-col gap-2 w-[640px]">
-      {(['vehicle', 'subject', 'type', 'date', 'record'] as (keyof FormState)[]).map(key => (
-        <input
-          key={key}
-          type="text"
-          placeholder={key}
-          value={formState[key]}
-          onChange={handleChange(key)}
-          className="border px-2 py-1 rounded"
-        />
+      {(Object.keys(formState) as (keyof FormState)[]).map(key => (
+        <div key={key} className="flex flex-col">
+          <label className="text-sm text-gray-700">{placeholders[key]}</label>
+          <input
+            type="text"
+            placeholder={placeholders[key]}
+            value={formState[key]}
+            onChange={handleChange(key)}
+            className="border px-2 py-1 rounded"
+          />
+        </div>
       ))}
     </div>
   );
