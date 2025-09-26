@@ -1,0 +1,5 @@
+/* 最低限のスタイル（Tailwindを使っていない場合） */
+body {
+  margin: 0;
+  font-family: sans-serif;
+}
