@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { FormState } from './InputPanel';
 
 type Props = {
@@ -9,6 +9,7 @@ type Props = {
 const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [boardScale, setBoardScale] = useState(1); // 拡大倍率
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
@@ -28,31 +29,28 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // 映像描画
     ctx.drawImage(video, 0, 0);
 
-    // ホワイトボード枠の描画（2列×5行）
+    // ホワイトボード枠の描画
+    const boardWidth = canvas.width / 8;
+    const boardHeight = boardWidth * 2.5; // 2列×5行の比率
     const boardX = 20;
-    const boardY = canvas.height - 300;
-    const cellWidth = 200;
-    const cellHeight = 50;
+    const boardY = canvas.height - boardHeight - 20;
+    const cellHeight = boardHeight / 5;
+    const labelWidth = boardWidth * 0.4;
+    const valueWidth = boardWidth * 0.6;
 
-    // 背景（透過なし）
     ctx.fillStyle = 'white';
-    ctx.fillRect(boardX - 4, boardY - 4, cellWidth * 2 + 8, cellHeight * 5 + 8);
+    ctx.fillRect(boardX - 2, boardY - 2, boardWidth + 4, boardHeight + 4);
 
-    // 枠線
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 2;
     for (let row = 0; row < 5; row++) {
-      for (let col = 0; col < 2; col++) {
-        const x = boardX + col * cellWidth;
-        const y = boardY + row * cellHeight;
-        ctx.strokeRect(x, y, cellWidth, cellHeight);
-      }
+      const y = boardY + row * cellHeight;
+      ctx.strokeRect(boardX, y, labelWidth, cellHeight);
+      ctx.strokeRect(boardX + labelWidth, y, valueWidth, cellHeight);
     }
 
-    // ラベルと値のペア
     const labels = ['設備', '対象', '種類', '日付', '備考'];
     const values = [
       overlayText.vehicle,
@@ -62,18 +60,12 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
       overlayText.record,
     ];
 
-    ctx.font = 'bold 20px sans-serif';
+    ctx.font = 'bold 16px sans-serif';
     ctx.fillStyle = 'black';
-
     for (let row = 0; row < 5; row++) {
-      // 左列：ラベル
-      const labelX = boardX + 10;
-      const labelY = boardY + row * cellHeight + 30;
-      ctx.fillText(labels[row], labelX, labelY);
-
-      // 右列：入力値
-      const valueX = boardX + cellWidth + 10;
-      ctx.fillText(values[row], valueX, labelY);
+      const y = boardY + row * cellHeight + 28;
+      ctx.fillText(labels[row], boardX + 8, y);
+      ctx.fillText(values[row], boardX + labelWidth + 8, y);
     }
 
     const dataUrl = canvas.toDataURL('image/png');
@@ -82,9 +74,8 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
 
   return (
     <div className="flex w-full justify-center items-start gap-4">
-      {/* カメラ映像・ホワイトボード・canvas を1つの relative コンテナにまとめる */}
+      {/* カメラ映像とホワイトボード */}
       <div className="relative w-[60%] h-[240px] bg-black rounded overflow-hidden">
-        {/* カメラ映像 */}
         <video
           ref={videoRef}
           autoPlay
@@ -93,34 +84,56 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
         />
 
         {/* ホワイトボード枠（オーバーレイ） */}
-        <div className="absolute bottom-4 left-4 z-10 bg-white p-2 rounded shadow grid grid-cols-2 grid-rows-5 gap-2 w-[420px] pointer-events-none">
-          <div className="border p-1 text-xs font-bold bg-gray-100">設備</div>
-          <div className="border p-1 text-xs font-bold">{overlayText.vehicle}</div>
+        <div
+          className="absolute bottom-4 left-4 z-10 origin-bottom-left"
+          style={{
+            transform: `scale(${boardScale})`,
+            transformOrigin: 'bottom left',
+          }}
+        >
+          <div className="bg-white p-2 rounded shadow grid grid-cols-[auto_1fr] grid-rows-5 gap-2 pointer-events-none text-xs w-[12.5%] aspect-[2/5]">
+            <div className="border px-2 py-1 font-bold bg-gray-100">設備</div>
+            <div className="border px-2 py-1 font-bold">{overlayText.vehicle}</div>
 
-          <div className="border p-1 text-xs font-bold bg-gray-100">対象</div>
-          <div className="border p-1 text-xs font-bold">{overlayText.subject}</div>
+            <div className="border px-2 py-1 font-bold bg-gray-100">対象</div>
+            <div className="border px-2 py-1 font-bold">{overlayText.subject}</div>
 
-          <div className="border p-1 text-xs font-bold bg-gray-100">種類</div>
-          <div className="border p-1 text-xs font-bold">{overlayText.type}</div>
+            <div className="border px-2 py-1 font-bold bg-gray-100">種類</div>
+            <div className="border px-2 py-1 font-bold">{overlayText.type}</div>
 
-          <div className="border p-1 text-xs font-bold bg-gray-100">日付</div>
-          <div className="border p-1 text-xs font-bold">{overlayText.date}</div>
+            <div className="border px-2 py-1 font-bold bg-gray-100">日付</div>
+            <div className="border px-2 py-1 font-bold">{overlayText.date}</div>
 
-          <div className="border p-1 text-xs font-bold bg-gray-100">備考</div>
-          <div className="border p-1 text-xs font-bold">{overlayText.record}</div>
+            <div className="border px-2 py-1 font-bold bg-gray-100">備考</div>
+            <div className="border px-2 py-1 font-bold">{overlayText.record}</div>
+          </div>
         </div>
 
-        {/* canvas（非表示） */}
         <canvas ref={canvasRef} style={{ display: 'none' }} />
       </div>
 
-      {/* シャッターボタン */}
-      <button
-        onClick={handleCapture}
-        className="h-[240px] w-[80px] bg-red-600 text-white rounded shadow flex items-center justify-center"
-      >
-        撮影
-      </button>
+      {/* シャッターボタンと拡大操作 */}
+      <div className="flex flex-col gap-2">
+        <button
+          onClick={handleCapture}
+          className="h-[240px] w-[80px] bg-red-600 text-white rounded shadow flex items-center justify-center"
+        >
+          撮影
+        </button>
+
+        <button
+          onClick={() => setBoardScale(prev => Math.min(prev + 0.2, 3))}
+          className="px-2 py-1 bg-blue-500 text-white rounded"
+        >
+          ＋拡大
+        </button>
+        <button
+          onClick={() => setBoardScale(prev => Math.max(prev - 0.2, 0.5))}
+          className="px-2 py-1 bg-gray-500 text-white rounded"
+        >
+          −縮小
+        </button>
+      </div>
     </div>
   );
 };
