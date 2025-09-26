@@ -1,47 +1,34 @@
-import { useState, useEffect } from 'react';
-import Camera from './components/Camera';
-import InputPanel, { FormState } from './components/InputPanel';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useState } from 'react';
+import CameraPage from './CameraPage';
+import SavedPage from './SavedPage';
 
-const App = () => {
-  const [photos, setPhotos] = useState<string[]>([]);
-  const [form, setForm] = useState<FormState>({
-    record: '',
-    subject: '',
-    type: '',
-    date: '',
-    vehicle: '',
-  });
-
-  // 初期ロード時に localStorage から復元
-  useEffect(() => {
-    const saved = localStorage.getItem('photos');
-    if (saved) setPhotos(JSON.parse(saved));
-  }, []);
-
-  const handleCapture = (dataUrl: string) => {
-    const updated = [...photos, dataUrl];
-    setPhotos(updated);
-    localStorage.setItem('photos', JSON.stringify(updated));
-  };
+function App() {
+  // 撮影された画像を保存する状態
+  const [savedImages, setSavedImages] = useState<string[]>([]);
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Whiteboard Photo Booth</h1>
+    <BrowserRouter>
+      <Routes>
+        {/* カメラページ（撮影＋保存） */}
+        <Route
+          path="/"
+          element={
+            <CameraPage
+              savedImages={savedImages}
+              setSavedImages={setSavedImages}
+            />
+          }
+        />
 
-      {/* 入力欄 */}
-      <InputPanel form={form} setForm={setForm} />
-
-      {/* カメラとホワイトボード表示 */}
-      <Camera onCapture={handleCapture} overlayText={form} />
-
-      {/* 撮影画像一覧 */}
-      <div className="grid grid-cols-2 gap-4 mt-6">
-        {photos.map((url, i) => (
-          <img key={i} src={url} className="rounded shadow" />
-        ))}
-      </div>
-    </div>
+        {/* 保存ページ（画像一覧表示） */}
+        <Route
+          path="/saved"
+          element={<SavedPage savedImages={savedImages} />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
-};
+}
 
 export default App;
