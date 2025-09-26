@@ -1,55 +1,45 @@
 import React from 'react';
 
-type Props = {
-  form: FormState;
-  setForm: React.Dispatch<React.SetStateAction<FormState>>;
-};
-
-export type FormState = {
-  record: string;
+type FormState = {
+  vehicle: string;
   subject: string;
   type: string;
   date: string;
-  vehicle: string;
+  record: string;
 };
 
-const InputPanel: React.FC<Props> = ({ form, setForm }) => {
+type Props = {
+  formState: FormState;
+  setFormState: (state: FormState) => void;
+};
+
+const InputPanel: React.FC<Props> = ({ formState, setFormState }) => {
+  const handleChange = (key: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormState({ ...formState, [key]: e.target.value });
+  };
+
+  const placeholders: Record<keyof FormState, string> = {
+    vehicle: '設備名',
+    subject: '対象物',
+    type: '種類',
+    date: '日付（例: 2025-09-26）',
+    record: '備考・記録',
+  };
+
   return (
-    <div className="p-4 space-y-2 bg-white/90 rounded shadow">
-      <input
-        type="text"
-        placeholder="記録"
-        value={form.record}
-        onChange={e => setForm({ ...form, record: e.target.value })}
-        className="w-full p-2 border rounded"
-      />
-      <input
-        type="text"
-        placeholder="対象"
-        value={form.subject}
-        onChange={e => setForm({ ...form, subject: e.target.value })}
-        className="w-full p-2 border rounded"
-      />
-      <input
-        type="text"
-        placeholder="種類"
-        value={form.type}
-        onChange={e => setForm({ ...form, type: e.target.value })}
-        className="w-full p-2 border rounded"
-      />
-      <input
-        type="date"
-        value={form.date}
-        onChange={e => setForm({ ...form, date: e.target.value })}
-        className="w-full p-2 border rounded"
-      />
-      <input
-        type="text"
-        placeholder="車両名"
-        value={form.vehicle}
-        onChange={e => setForm({ ...form, vehicle: e.target.value })}
-        className="w-full p-2 border rounded"
-      />
+    <div className="flex flex-col gap-2 w-[640px]">
+      {(Object.keys(formState) as (keyof FormState)[]).map(key => (
+        <div key={key} className="flex flex-col">
+          <label className="text-sm text-gray-700">{placeholders[key]}</label>
+          <input
+            type="text"
+            placeholder={placeholders[key]}
+            value={formState[key]}
+            onChange={handleChange(key)}
+            className="border px-2 py-1 rounded"
+          />
+        </div>
+      ))}
     </div>
   );
 };

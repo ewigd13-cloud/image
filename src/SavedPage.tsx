@@ -8,7 +8,6 @@ const SavedPage: React.FC<Props> = ({ savedImages }) => {
   return (
     <div className="flex flex-col items-center gap-6 p-6">
       <h2 className="text-2xl font-bold">保存された画像</h2>
-
       {savedImages.length === 0 ? (
         <p className="text-gray-600">まだ保存された画像はありません。</p>
       ) : (

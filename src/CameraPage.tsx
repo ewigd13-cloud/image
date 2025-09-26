@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Camera from './components/Camera'; // ← Camera.tsx が src/components にある場合
-import InputPanel from './components/InputPanel'; // ← InputPanel.tsx も同じく
+import Camera from './components/Camera';
+import InputPanel from './components/InputPanel';
 import { useNavigate } from 'react-router-dom';
 
 type Props = {
@@ -20,7 +20,7 @@ const CameraPage: React.FC<Props> = ({ savedImages, setSavedImages }) => {
   const navigate = useNavigate();
 
   const handleCapture = (dataUrl: string) => {
-    setSavedImages([...savedImages, dataUrl]); // 自動保存
+    setSavedImages([...savedImages, dataUrl]);
   };
 
   return (
