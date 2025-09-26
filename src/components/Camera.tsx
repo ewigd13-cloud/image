@@ -88,18 +88,23 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
         />
 
         {/* ホワイトボード枠（オーバーレイ） */}
-        <div className="absolute bottom-4 left-4 z-10 bg-white p-2 rounded shadow grid grid-cols-2 grid-rows-5 gap-2 w-[420px]">
-          <div className="border p-1 text-xs font-bold">{overlayText.date}</div>
-          <div className="border p-1 text-xs font-bold">{overlayText.vehicle}</div>
-          <div className="border p-1 text-xs font-bold">{overlayText.type}</div>
-          <div className="border p-1 text-xs font-bold">{overlayText.subject}</div>
-          <div className="border p-1 text-xs font-bold">{overlayText.record}</div>
-          <div className="border p-1 text-xs font-bold">（空欄）</div>
-          <div className="border p-1 text-xs font-bold">（空欄）</div>
-          <div className="border p-1 text-xs font-bold">（空欄）</div>
-          <div className="border p-1 text-xs font-bold">（空欄）</div>
-          <div className="border p-1 text-xs font-bold">（空欄）</div>
-        </div>
+<div className="absolute bottom-4 left-4 z-10 bg-white p-2 rounded shadow grid grid-cols-2 grid-rows-5 gap-2 w-[420px] pointer-events-none">
+  {/* 左列：固定ラベル */}
+  <div className="border p-1 text-xs font-bold bg-gray-100">設備</div>
+  <div className="border p-1 text-xs font-bold">{overlayText.vehicle}</div>
+
+  <div className="border p-1 text-xs font-bold bg-gray-100">対象</div>
+  <div className="border p-1 text-xs font-bold">{overlayText.subject}</div>
+
+  <div className="border p-1 text-xs font-bold bg-gray-100">種類</div>
+  <div className="border p-1 text-xs font-bold">{overlayText.type}</div>
+
+  <div className="border p-1 text-xs font-bold bg-gray-100">日付</div>
+  <div className="border p-1 text-xs font-bold">{overlayText.date}</div>
+
+  <div className="border p-1 text-xs font-bold bg-gray-100">備考</div>
+  <div className="border p-1 text-xs font-bold">{overlayText.record}</div>
+</div>
 
         {/* canvas（非表示） */}
         <canvas ref={canvasRef} style={{ display: 'none' }} />
