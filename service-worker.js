@@ -2,7 +2,9 @@ const CACHE_NAME = 'whiteboard-cache-v1';
 const urlsToCache = [
   '/image/',
   '/image/index.html',
-  '/image/assets/index-0N8X_cIM.js', // 実際のファイル名に合わせて
+  '/image/404.html',
+  '/image/manifest.json',
+  '/image/assets/index-0N8X_cIM.js',
   '/image/assets/index-CJsT-0fR.css',
   '/image/icon-192.png',
   '/image/icon-512.png',
