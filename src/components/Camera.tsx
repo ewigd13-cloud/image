@@ -97,19 +97,33 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
         </button>
       </div>
 
-      {/* ホワイトボード枠（2列×5行） */}
-      <div className="grid grid-cols-2 grid-rows-5 gap-2 mt-6 bg-white p-4 rounded shadow w-[90%] max-w-xl">
-        <div className="border p-2 font-bold">{overlayText.date}</div>
-        <div className="border p-2 font-bold">{overlayText.vehicle}</div>
-        <div className="border p-2 font-bold">{overlayText.type}</div>
-        <div className="border p-2 font-bold">{overlayText.subject}</div>
-        <div className="border p-2 font-bold">{overlayText.record}</div>
-        <div className="border p-2 font-bold">（空欄）</div>
-        <div className="border p-2 font-bold">（空欄）</div>
-        <div className="border p-2 font-bold">（空欄）</div>
-        <div className="border p-2 font-bold">（空欄）</div>
-        <div className="border p-2 font-bold">（空欄）</div>
-      </div>
+      <div className="relative w-[60%] h-[240px] bg-black rounded overflow-hidden">
+  {/* カメラ映像 */}
+  <video
+    ref={videoRef}
+    autoPlay
+    playsInline
+    className="absolute inset-0 w-full h-full object-cover z-0"
+  />
+
+  {/* ホワイトボード枠（オーバーレイ） */}
+  <div className="absolute bottom-4 left-4 z-10 bg-white p-2 rounded shadow grid grid-cols-2 grid-rows-5 gap-2 w-[420px]">
+    <div className="border p-1 text-xs font-bold">{overlayText.date}</div>
+    <div className="border p-1 text-xs font-bold">{overlayText.vehicle}</div>
+    <div className="border p-1 text-xs font-bold">{overlayText.type}</div>
+    <div className="border p-1 text-xs font-bold">{overlayText.subject}</div>
+    <div className="border p-1 text-xs font-bold">{overlayText.record}</div>
+    <div className="border p-1 text-xs font-bold">（空欄）</div>
+    <div className="border p-1 text-xs font-bold">（空欄）</div>
+    <div className="border p-1 text-xs font-bold">（空欄）</div>
+    <div className="border p-1 text-xs font-bold">（空欄）</div>
+    <div className="border p-1 text-xs font-bold">（空欄）</div>
+  </div>
+
+  {/* canvas（非表示） */}
+  <canvas ref={canvasRef} style={{ display: 'none' }} />
+</div>
+
     </div>
   );
 };
