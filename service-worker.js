@@ -1,41 +1,25 @@
-const CACHE_NAME = 'whiteboard-photo-booth-v2';
+const CACHE_NAME = 'whiteboard-cache-v1';
 const urlsToCache = [
   '/image/',
   '/image/index.html',
-  '/image/manifest.json',
-  '/image/icons/icon-192.png',
-  '/image/icons/icon-512.png'
+  '/image/assets/index-0N8X_cIM.js', // 実際のファイル名に合わせて
+  '/image/assets/index-CJsT-0fR.css',
+  '/image/icon-192.png',
+  '/image/icon-512.png',
 ];
 
-// install
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(urlsToCache);
+    })
   );
-  self.skipWaiting();
 });
 
-// activate
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      )
-    )
-  );
-  self.clients.claim();
-});
-
-// fetch
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request).then(response =>
-      response || fetch(event.request)
-    )
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
+    })
   );
 });
