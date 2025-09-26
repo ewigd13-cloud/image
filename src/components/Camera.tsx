@@ -28,16 +28,20 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // 映像描画
     ctx.drawImage(video, 0, 0);
 
+    // ホワイトボード枠の描画（2列×5行）
     const boardX = 20;
     const boardY = canvas.height - 300;
     const cellWidth = 200;
     const cellHeight = 50;
 
+    // 背景（透過なし）
     ctx.fillStyle = 'white';
     ctx.fillRect(boardX - 4, boardY - 4, cellWidth * 2 + 8, cellHeight * 5 + 8);
 
+    // 枠線
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 2;
     for (let row = 0; row < 5; row++) {
@@ -48,6 +52,7 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
       }
     }
 
+    // テキスト描画
     const values = [
       overlayText.date,
       overlayText.vehicle,
@@ -74,6 +79,7 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
     <div className="flex w-full justify-center items-start gap-4">
       {/* カメラ映像・ホワイトボード・canvas を1つの relative コンテナにまとめる */}
       <div className="relative w-[60%] h-[240px] bg-black rounded overflow-hidden">
+        {/* カメラ映像 */}
         <video
           ref={videoRef}
           autoPlay
@@ -95,6 +101,7 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
           <div className="border p-1 text-xs font-bold">（空欄）</div>
         </div>
 
+        {/* canvas（非表示） */}
         <canvas ref={canvasRef} style={{ display: 'none' }} />
       </div>
 
