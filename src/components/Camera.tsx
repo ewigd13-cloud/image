@@ -30,50 +30,42 @@ const Camera: React.FC<Props> = ({ onCapture, overlayText }) => {
 
     ctx.drawImage(video, 0, 0);
 
-    const text = `${overlayText.date}\n${overlayText.vehicle}\n${overlayText.type} / ${overlayText.subject}\n${overlayText.record}`;
-    ctx.font = 'bold 32px sans-serif';
-    ctx.fillStyle = 'white';
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
-    const x = 20;
-    let y = canvas.height - 120;
-    text.split('\n').forEach(line => {
-      ctx.strokeText(line, x, y);
-      ctx.fillText(line, x, y);
-      y += 36;
-    });
+    // ここにホワイトボード枠の描画処理を追加予定（次ステップ）
 
     const dataUrl = canvas.toDataURL('image/png');
     onCapture(dataUrl);
   };
 
   return (
-    <div className="relative w-full h-[400px] bg-black rounded overflow-visible">
-      {/* カメラ映像 */}
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0"
-      />
+    <div className="flex flex-col items-center">
+      {/* カメラとシャッターボタン横並び */}
+      <div className="flex w-full justify-center items-start gap-4">
+        <div className="relative w-[60%] h-[240px] bg-black rounded overflow-hidden">
+          <video ref={videoRef} autoPlay playsInline className="absolute inset-0 w-full h-full object-cover z-0" />
+          <canvas ref={canvasRef} style={{ display: 'none' }} />
+        </div>
 
-      {/* ホワイトボード表示（リアルタイム） */}
-      <div className="absolute bottom-4 left-4 z-10 bg-white/80 p-2 rounded text-xs font-bold whitespace-pre-wrap leading-tight shadow-md pointer-events-none">
-        {overlayText.date || overlayText.vehicle || overlayText.record
-          ? `${overlayText.date}\n${overlayText.vehicle}\n${overlayText.type} / ${overlayText.subject}\n${overlayText.record}`
-          : '（ホワイトボードに表示する内容が未入力です）'}
+        <button
+          onClick={handleCapture}
+          className="h-[240px] w-[80px] bg-red-600 text-white rounded shadow flex items-center justify-center"
+        >
+          撮影
+        </button>
       </div>
 
-      {/* 撮影ボタン */}
-      <button
-        onClick={handleCapture}
-        className="absolute bottom-4 right-4 bg-red-600 text-white px-4 py-2 rounded shadow z-20"
-      >
-        撮影
-      </button>
-
-      {/* 非表示のcanvas */}
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
+      {/* ホワイトボード枠（2列×5行） */}
+      <div className="grid grid-cols-2 grid-rows-5 gap-2 mt-6 bg-white p-4 rounded shadow w-[90%] max-w-xl">
+        <div className="border p-2 font-bold">{overlayText.date}</div>
+        <div className="border p-2 font-bold">{overlayText.vehicle}</div>
+        <div className="border p-2 font-bold">{overlayText.type}</div>
+        <div className="border p-2 font-bold">{overlayText.subject}</div>
+        <div className="border p-2 font-bold">{overlayText.record}</div>
+        <div className="border p-2 font-bold">（空欄）</div>
+        <div className="border p-2 font-bold">（空欄）</div>
+        <div className="border p-2 font-bold">（空欄）</div>
+        <div className="border p-2 font-bold">（空欄）</div>
+        <div className="border p-2 font-bold">（空欄）</div>
+      </div>
     </div>
   );
 };
