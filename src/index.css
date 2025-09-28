@@ -1,5 +1,25 @@
-/* 最低限のスタイル（Tailwindを使っていない場合） */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap');
+
 body {
+  font-family: 'Noto Serif JP', serif;
+  background-color: #f3f4f6;
   margin: 0;
-  font-family: sans-serif;
+  padding: 0;
+}
+
+textarea {
+  resize: none;
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 400;
+}
+
+canvas {
+  display: block;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
 }

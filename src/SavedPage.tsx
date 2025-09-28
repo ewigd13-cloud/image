@@ -1,24 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 type Props = {
-  savedImages: string[];
+  onBack: () => void;
 };
 
-const SavedPage: React.FC<Props> = ({ savedImages }) => {
+const SavedPage: React.FC<Props> = ({ onBack }) => {
+  const [images, setImages] = useState<string[]>(
+    JSON.parse(localStorage.getItem('capturedImages') || '[]')
+  );
+
+  const handleDelete = (index: number) => {
+    const updated = [...images];
+    updated.splice(index, 1);
+    setImages(updated);
+    localStorage.setItem('capturedImages', JSON.stringify(updated));
+  };
+
+  const handleClearAll = () => {
+    if (confirm('すべての保存画像を削除しますか？')) {
+      setImages([]);
+      localStorage.removeItem('capturedImages');
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center gap-6 p-6">
-      <h2 className="text-2xl font-bold">保存された画像</h2>
-      {savedImages.length === 0 ? (
-        <p className="text-gray-600">まだ保存された画像はありません。</p>
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <button onClick={onBack} className="px-4 py-2 bg-gray-600 text-white rounded">
+          戻る
+        </button>
+        <button onClick={handleClearAll} className="px-4 py-2 bg-red-600 text-white rounded">
+          全削除
+        </button>
+      </div>
+
+      {images.length === 0 ? (
+        <p className="text-center text-gray-500">保存された画像はありません。</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {savedImages.map((img, i) => (
-            <img
-              key={i}
-              src={img}
-              alt={`保存画像${i + 1}`}
-              className="border rounded shadow w-full max-w-[320px]"
-            />
+        <div className="grid grid-cols-3 gap-4">
+          {images.map((src, i) => (
+            <div key={i} className="relative border rounded overflow-hidden">
+              <img src={src} alt={`保存画像${i + 1}`} className="w-full h-auto" />
+              <button
+                onClick={() => handleDelete(i)}
+                className="absolute top-1 right-1 bg-red-600 text-white text-xs px-2 py-1 rounded"
+              >
+                削除
+              </button>
+            </div>
           ))}
         </div>
       )}
